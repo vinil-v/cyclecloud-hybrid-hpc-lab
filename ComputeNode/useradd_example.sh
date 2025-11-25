@@ -28,3 +28,4 @@ fi
 mkdir -p /shared/home/$username
 useradd -g $gid -u $uid -d /shared/home/$username -s /bin/bash $username
 chown -R $username:$username /shared/home/$username
+echo "User setup completed for $username with UID: $uid and GID: $gid"
