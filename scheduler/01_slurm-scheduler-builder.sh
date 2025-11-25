@@ -299,7 +299,6 @@ SchedulerParameters=max_switch_wait=24:00:00
 MaxNodeCount=10000
 # This as the partition definitions managed by azslurm partitions > /sched/azure.conf
 Include azure.conf
-Include partitions.conf
 # If slurm.accounting.enabled=true this will setup slurmdbd
 # otherwise it will just define accounting_storage/none as the plugin
 Include accounting.conf
@@ -339,8 +338,7 @@ ln -s "$sched_dir/cgroup.conf" /etc/slurm/cgroup.conf
 ln -s "$sched_dir/accounting.conf" /etc/slurm/accounting.conf
 ln -s "$sched_dir/azure.conf" /etc/slurm/azure.conf
 ln -s "$sched_dir/gres.conf" /etc/slurm/gres.conf 
-ln -s "$sched_dir/partitions.conf" /etc/slurm/partitions.conf
-touch "$sched_dir"/gres.conf "$sched_dir"/azure.conf "$sched_dir"/partitions.conf 
+touch "$sched_dir"/gres.conf "$sched_dir"/azure.conf 
 chown  slurm:slurm "$sched_dir"/*.conf
 chmod 644 "$sched_dir"/*.conf
 chown slurm:slurm /etc/slurm/*.conf

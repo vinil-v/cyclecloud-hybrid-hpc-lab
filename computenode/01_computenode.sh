@@ -233,7 +233,6 @@ ln -s "$sched_dir/cgroup.conf" /etc/slurm/cgroup.conf
 ln -s "$sched_dir/accounting.conf" /etc/slurm/accounting.conf
 ln -s "$sched_dir/azure.conf" /etc/slurm/azure.conf
 ln -s "$sched_dir/gres.conf" /etc/slurm/gres.conf 
-ln -s "$sched_dir/partitions.conf" /etc/slurm/partitions.conf
 chown  slurm:slurm "$sched_dir"/*.conf
 chmod 644 "$sched_dir"/*.conf
 chown slurm:slurm /etc/slurm/*.conf
