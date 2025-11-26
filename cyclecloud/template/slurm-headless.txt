@@ -106,7 +106,7 @@ Autoscale = $Autoscale
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $ExecuteNodesPublic
 
-    [[nodearray hpc]]
+    [[nodearray oncloudhpc]]
     Extends = nodearraybase
     MachineType = $HPCMachineType
     ImageName = $HPCImageName
@@ -119,9 +119,9 @@ Autoscale = $Autoscale
         [[[configuration]]]
         slurm.default_partition = true
         slurm.hpc = true
-        slurm.partition = hpc
+        slurm.partition = oncloudhpc
 
-    [[nodearray htc]]
+    [[nodearray oncloudhtc]]
     Extends = nodearraybase
     MachineType = $HTCMachineType
     ImageName = $HTCImageName
@@ -133,11 +133,11 @@ Autoscale = $Autoscale
 
         [[[configuration]]]
         slurm.hpc = false
-        slurm.partition = htc
+        slurm.partition = oncloudhtc
         # set pcpu = false for all hyperthreaded VMs
         slurm.use_pcpu = false
 
-    [[nodearray gpu]]
+    [[nodearray oncloudgpu]]
     Extends = nodearraybase
     MachineType = $GPUMachineType
     ImageName = $GPUImageName
@@ -152,7 +152,7 @@ Autoscale = $Autoscale
         [[[configuration]]]
         slurm.default_partition = true
         slurm.hpc = true
-        slurm.partition = gpu
+        slurm.partition = oncloudgpu
 
     [[nodearray dynamic]]
     Extends = nodearraybase
