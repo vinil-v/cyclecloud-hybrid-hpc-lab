@@ -3,7 +3,10 @@
 # This is for Demonstration purposes only. Please modify as per your requirements.
 # Author : Vinil Vadakkepurakkal
 # Date : 26/11/2025
-echo "PartitionName=onprem Nodes=compute1 State=UP Default=YES" >> /etc/slurm/azure.conf
-echo "NodeName=compute1 CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=2 ThreadsPerCore=2 RealMemory=15989" >> /etc/slurm/azure.conf
+echo "NodeName=compute1 Feature=static CPUs=4 Boards=1 SocketsPerBoard=1 CoresPerSocket=2 ThreadsPerCore=2 RealMemory=15989" >> /etc/slurm/azure.conf
+echo "PartitionName=onprem Nodes=compute1 Default=NO MaxTime=INFINITE State=UP">> /etc/slurm/azure.conf
+
 #restart slurm to apply changes
 scontrol reconfigure
+
+
