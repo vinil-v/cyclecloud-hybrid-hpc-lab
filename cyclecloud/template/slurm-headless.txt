@@ -109,7 +109,7 @@ echo "<IP address>   <scheduler hostname>" >> /etc/hosts
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $ExecuteNodesPublic
 
-    [[nodearray oncloudhpc]]
+    [[nodearray hpc]]
     Extends = nodearraybase
     MachineType = $HPCMachineType
     ImageName = $HPCImageName
@@ -122,9 +122,9 @@ echo "<IP address>   <scheduler hostname>" >> /etc/hosts
         [[[configuration]]]
         slurm.default_partition = true
         slurm.hpc = true
-        slurm.partition = oncloudhpc
+        slurm.partition = hpc
 
-    [[nodearray oncloudhtc]]
+    [[nodearray htc]]
     Extends = nodearraybase
     MachineType = $HTCMachineType
     ImageName = $HTCImageName
@@ -136,11 +136,11 @@ echo "<IP address>   <scheduler hostname>" >> /etc/hosts
 
         [[[configuration]]]
         slurm.hpc = false
-        slurm.partition = oncloudhtc
+        slurm.partition = htc
         # set pcpu = false for all hyperthreaded VMs
         slurm.use_pcpu = false
 
-    [[nodearray oncloudgpu]]
+    [[nodearray gpu]]
     Extends = nodearraybase
     MachineType = $GPUMachineType
     ImageName = $GPUImageName
@@ -155,7 +155,7 @@ echo "<IP address>   <scheduler hostname>" >> /etc/hosts
         [[[configuration]]]
         slurm.default_partition = true
         slurm.hpc = true
-        slurm.partition = oncloudgpu
+        slurm.partition = gpu
 
     [[nodearray dynamic]]
     Extends = nodearraybase

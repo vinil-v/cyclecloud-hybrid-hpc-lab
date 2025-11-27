@@ -34,5 +34,6 @@ su - $username -c "ssh-keygen -t rsa -N '' -f /shared/home/$username/.ssh/id_rsa
 su - $username -c "cat /shared/home/$username/.ssh/id_rsa.pub >> /shared/home/$username/.ssh/authorized_keys"
 su - $username -c "chmod 600 /shared/home/$username/.ssh/authorized_keys"
 su - $username -c "chmod 700 /shared/home/$username/.ssh"
-echo "alias ll='ls -alF'" >> /etc/profile 
+echo "alias ll='ls -alF'" >> /shared/home/$username/.bashrc
+chmod 755 /shared/home/$username/.bashrc
 echo "User $username created with UID $uid and GID $gid"
