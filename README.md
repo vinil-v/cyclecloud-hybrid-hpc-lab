@@ -191,7 +191,11 @@ This Lab focuses on deploying the foundational Azure-based HPC environment using
 - [Deploy CycleCloud Workspace for Slurm Quickstart](https://learn.microsoft.com/en-us/azure/cyclecloud/qs-deploy-ccws?view=cyclecloud-8)
 - [CycleCloud CLI Reference](https://learn.microsoft.com/en-us/azure/cyclecloud/cli?view=cyclecloud-8)
 
-**Lab 1 Video Tutorial**: [Azure CycleCloud Deployment](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab)
+
+### 🚀 Lab 1 Video Tutorial: Creating Azure-Only HPC Cluster
+
+[![Lab 1 – Creating Azure-Only HPC Cluster](https://img.youtube.com/vi/CkzIVCgrdI8/maxresdefault.jpg)](https://www.youtube.com/watch?v=CkzIVCgrdI8)
+
 
 Upon completing Lab 1, you will have a functioning Azure-only Slurm environment and comprehensive understanding of CycleCloud core capabilities, preparing for on-premises cluster integration in subsequent exercises.
 
