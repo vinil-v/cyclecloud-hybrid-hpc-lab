@@ -171,7 +171,8 @@ Upon completing Lab 0, you will have established a fully connected and resolvabl
 
 ### Lab 0 Video Tutorial — Network Preparation for Hybrid HPC
 
-[![Lab 0 Video](https://img.youtube.com/vi/RtCXP_YmuYM/0.jpg)](https://www.youtube.com/watch?v=RtCXP_YmuYM)
+[![Lab 0: Network Foundation](https://img.youtube.com/vi/RtCXP_YmuYM/maxresdefault.jpg)](https://youtu.be/RtCXP_YmuYM)
+
 
 
 ### Lab 1: Creating an Azure-Only HPC Cluster
