@@ -1,6 +1,5 @@
-<div align="center">
-
 # 🚀 Enabling Slurm Cloud Bursting in Hybrid HPC Environments
+
 ## *with Azure CycleCloud*
 
 [![Azure](https://img.shields.io/badge/Azure-CycleCloud-0078D4?style=for-the-badge&logo=microsoft-azure)](https://azure.microsoft.com/en-us/services/cyclecloud/)
@@ -9,35 +8,27 @@
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Tutorial](https://img.shields.io/badge/Type-Hands--On%20Tutorial-brightgreen?style=for-the-badge)](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab)
 
-*A comprehensive, hands-on tutorial for implementing hybrid HPC solutions*
-
-</div>
+**A comprehensive, hands-on tutorial for implementing hybrid HPC solutions**
 
 ---
 
 ## 📖 Table of Contents
 
-<details>
-<summary><b>Click to expand navigation</b></summary>
-
 - [🎯 Learning Objectives](#-learning-objectives)
-- [🏗️ Understanding Azure CycleCloud](#%EF%B8%8F-understanding-azure-cyclecloud)
+- [🏗️ Understanding Azure CycleCloud](#️-understanding-azure-cyclecloud)
 - [Azure CycleCloud Workspace for Slurm](#azure-cyclecloud-workspace-for-slurm)
 - [🌐 What is Hybrid HPC?](#-what-is-hybrid-hpc)
 - [🚀 What is Cloud Bursting?](#-what-is-cloud-bursting)
-- [🚀 Quick Start Guide](#-quick-start-guide)
-- [📋 Prerequisites](#-prerequisites)
-- [🧪 Laboratory Exercises](#-laboratory-exercises)
-  - [🌐 Lab 0: Preparing Networks for Bursting](#-lab-0-preparing-networks-for-bursting)
-  - [☁️ Lab 1: Creating an Azure-Only HPC Cluster](#%EF%B8%8F-lab-1-creating-an-azure-only-hpc-cluster)
-  - [🖥️ Lab 2: Simulating the "On-Premises" HPC Cluster](#%EF%B8%8F-lab-2-simulating-the-on-premises-hpc-cluster)
-  - [🔗 Lab 3: Integrating the On-Premises HPC Cluster with CycleCloud](#-lab-3-integrating-the-on-premises-hpc-cluster-with-cyclecloud)
-  - [🚀 Lab 4: Bursting in Action](#-lab-4-bursting-in-action)
+- [Prerequisites](#prerequisites)
+- [Laboratory Exercises](#laboratory-exercises)
+  - [Lab 0: Preparing Networks for Bursting](#lab-0-preparing-networks-for-bursting)
+  - [Lab 1: Creating an Azure-Only HPC Cluster](#lab-1-creating-an-azure-only-hpc-cluster)
+  - [Lab 2: Simulating the On-Premises HPC Cluster](#lab-2-simulating-the-on-premises-hpc-cluster)
+  - [Lab 3: Integrating the On-Premises HPC Cluster with CycleCloud](#lab-3-integrating-the-on-premises-hpc-cluster-with-cyclecloud)
+  - [Lab 4: Bursting in Action](#lab-4-bursting-in-action)
 - [🎉 Conclusion](#-conclusion)
 - [📚 Additional Resources](#-additional-resources)
 - [🤝 Support and Contributions](#-support-and-contributions)
-
-</details>
 
 ---
 
@@ -48,6 +39,7 @@ This **comprehensive tutorial** demonstrates how organizations can extend their 
 > **🎯 Perfect for:** HPC administrators, cloud architects, and DevOps engineers looking to implement cost-effective, scalable hybrid computing solutions.
 
 This hands-on guide covers the complete workflow from initial setup to validation, including:
+
 - ✅ Establishing network prerequisites
 - ✅ Configuring headless Slurm clusters in CycleCloud  
 - ✅ Connecting external Slurm schedulers
@@ -56,38 +48,25 @@ This hands-on guide covers the complete workflow from initial setup to validatio
 
 ## 🎯 Learning Objectives
 
-<table>
-<tr>
-<td width="50%">
+### 🔧 Technical Skills
 
-### 🔧 **Technical Skills**
 - **Azure CycleCloud Mastery**: Deep understanding of CycleCloud and Workspace for Slurm capabilities
 - **Hybrid Architecture Design**: Learn to architect and implement hybrid HPC environments
 - **Cloud Bursting Implementation**: Master dynamic scaling mechanisms in HPC workflows
 
-</td>
-<td width="50%">
+### 💡 Practical Experience
 
-### 💡 **Practical Experience**  
 - **Hands-on Implementation**: Guided demonstrations with real-world scenarios
 - **Production-Ready Skills**: Best practices for enterprise HPC deployments
 - **Troubleshooting Expertise**: Common issues and resolution strategies
 
-</td>
-</tr>
-</table>
-
 ## 🏗️ Understanding Azure CycleCloud
 
-<div align="center">
-<img src="https://docs.microsoft.com/en-us/azure/cyclecloud/media/cyclecloud-overview/cyclecloud-architecture.png" alt="Azure CycleCloud Architecture" width="600">
-</div>
+![Azure CycleCloud Architecture](https://docs.microsoft.com/en-us/azure/cyclecloud/media/cyclecloud-overview/cyclecloud-architecture.png)
 
 Azure CycleCloud serves as an **enterprise-grade orchestration platform** for managing High Performance Computing environments within Azure. This sophisticated tool enables organizations to provision HPC infrastructure, deploy industry-standard schedulers, and implement automatic scaling to execute workloads efficiently at any scale.
 
 ### 🌟 Key Features
-
-<div align="center">
 
 | Feature | Description | Benefit |
 |---------|-------------|--------|
@@ -96,8 +75,6 @@ Azure CycleCloud serves as an **enterprise-grade orchestration platform** for ma
 | ⚙️ **Scheduler Support** | Slurm, PBS, LSF, and other popular schedulers | Use familiar tools |
 | 🚀 **Auto-Scaling** | Complete infrastructure provisioning and scaling | Optimal resource utilization |
 | 💰 **Cost Control** | Simplified cost management and governance | Budget optimization |
-
-</div>
 
 > 📚 **Learn More**: [Azure CycleCloud Overview](https://learn.microsoft.com/en-us/azure/cyclecloud/overview?view=cyclecloud-8)
 
@@ -121,8 +98,6 @@ Upon deployment, users can immediately connect to login nodes via SSH or Visual 
 
 ### 🔄 Blending On-Premises and Cloud Infrastructure
 
-<div align="center">
-
 ```mermaid
 graph LR
     A[On-Premises HPC] -->|Burst| B[Cloud Resources]
@@ -134,13 +109,9 @@ graph LR
     style C fill:#e8f5e8
 ```
 
-</div>
-
 Hybrid HPC represents the **strategic combination** of existing on-premises HPC resources with the elastic, on-demand capabilities of public cloud platforms like Azure. This approach addresses critical organizational challenges while maximizing computational efficiency and cost-effectiveness.
 
 ### 🎯 Common Pain Points Addressed
-
-<div align="center">
 
 | 🚨 **Challenge** | 🔧 **Hybrid Solution** | 📈 **Benefit** |
 |------------------|------------------------|----------------|
@@ -149,27 +120,19 @@ Hybrid HPC represents the **strategic combination** of existing on-premises HPC 
 | 💸 High CapEx Costs | Pay-per-use cloud model | Reduced capital investment |
 | 📉 Resource Waste | Automatic scaling | Optimal utilization |
 
-</div>
-
 ### 🛠️ Technical Challenges in Hybrid Implementation
 
-<details>
-<summary><b>📡 Network & Connectivity</b></summary>
+#### 📡 Network & Connectivity
 
 - **Data Gravity**: Managing data locality and transfer costs
 - **Network Latency**: Ensuring performance across distributed resources
 - **Secure Connections**: VPN/ExpressRoute implementation
 
-</details>
-
-<details>
-<summary><b>🔧 System Integration</b></summary>
+#### 🔧 System Integration
 
 - **Scheduler Integration**: Seamless coordination between environments
 - **Name Resolution**: Consistent DNS and hostname management  
 - **User Identity**: Unified authentication and authorization
-
-</details>
 
 ## What is Cloud Bursting?
 
@@ -188,15 +151,19 @@ The cloud bursting process operates through several key characteristics:
 Successful cloud bursting implementation requires careful attention to several technical requirements to ensure seamless operation between on-premises and cloud environments:
 
 #### Network Connectivity
+
 Establishing reliable, secure communication channels between environments is fundamental. This typically involves implementing Site-to-Site VPN connections or Azure ExpressRoute for consistent, high-performance networking.
 
-#### Shared Storage Systems  
+#### Shared Storage Systems
+
 Both environments must maintain access to common filesystems, often implemented through Network File System (NFS) or Azure NetApp Files. This shared storage ensures consistent access to home directories, application binaries, and job input/output data.
 
 #### Identity Management
+
 Maintaining consistent user and group identities (UIDs/GIDs) across environments is essential for security and data access. Organizations typically implement LDAP or Active Directory integration to ensure identity consistency.
 
 #### DNS Resolution
+
 Consistent name resolution across the entire hybrid cluster is critical for proper node communication and job execution. This requires careful DNS configuration and often involves private DNS zones.
 
 ## Labs Overview
@@ -755,8 +722,6 @@ Completing Lab 4 confirms that your hybrid HPC environment is fully operational 
 
 Congratulations! This comprehensive tutorial has demonstrated the complete implementation of **hybrid HPC environments** using Azure CycleCloud and Slurm. Through these structured laboratory exercises, you've gained practical experience with:
 
-<div align="center">
-
 | 🎯 **Skill Acquired** | 📈 **Value Delivered** |
 |----------------------|------------------------|
 | **🌐 Network Infrastructure Design** | Secure, scalable connections between environments |
@@ -764,18 +729,17 @@ Congratulations! This comprehensive tutorial has demonstrated the complete imple
 | **⚡ Automated Scaling** | Dynamic resource provisioning based on demand |
 | **💰 Cost Optimization** | Efficient use of cloud resources |
 
-</div>
+### 🚀 What You've Accomplished
 
-### 🚀 **What You've Accomplished**
+- ✅ **Mastered Hybrid Architecture**: Built production-ready hybrid HPC environment  
+- ✅ **Implemented Cloud Bursting**: Automated scaling from on-premises to cloud  
+- ✅ **Optimized Costs**: Leveraged pay-per-use model for variable workloads  
+- ✅ **Enhanced Scalability**: Eliminated capacity constraints with elastic cloud resources
 
-✅ **Mastered Hybrid Architecture**: Built production-ready hybrid HPC environment  
-✅ **Implemented Cloud Bursting**: Automated scaling from on-premises to cloud  
-✅ **Optimized Costs**: Leveraged pay-per-use model for variable workloads  
-✅ **Enhanced Scalability**: Eliminated capacity constraints with elastic cloud resources
-
-### 🎯 **Real-World Impact**
+### 🎯 Real-World Impact
 
 The hybrid approach you've implemented enables organizations to:
+
 - **Maximize HPC Capabilities** while maintaining cost efficiency
 - **Handle Variable Workloads** without significant capital investment
 - **Combine Predictable Performance** of on-premises with cloud elasticity
@@ -785,43 +749,26 @@ The hybrid approach you've implemented enables organizations to:
 
 ## 📚 Additional Resources
 
-<div align="center">
-
 [![Azure CycleCloud Docs](https://img.shields.io/badge/📖_Azure_CycleCloud-Documentation-0078D4?style=for-the-badge&logo=microsoft-azure)](https://learn.microsoft.com/en-us/azure/cyclecloud/)
 [![CycleCloud Workspace](https://img.shields.io/badge/🌀_CycleCloud-Workspace-0078D4?style=for-the-badge&logo=microsoft-azure)](https://learn.microsoft.com/en-us/azure/cyclecloud/overview-ccws?view=cyclecloud-8)
 [![Slurm Docs](https://img.shields.io/badge/📖_Slurm-Documentation-green?style=for-the-badge)](https://slurm.schedmd.com/documentation.html)
 [![Azure HPC](https://img.shields.io/badge/📖_Azure_HPC-Architecture-orange?style=for-the-badge)](https://learn.microsoft.com/en-us/azure/architecture/topics/high-performance-computing/)
 [![Lab Repository](https://img.shields.io/badge/🛠️_Lab-Repository-purple?style=for-the-badge&logo=github)](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab)
 
-</div>
+### 🔗 Essential Documentation
 
-### 🔗 **Essential Documentation**
-
-<table>
-<tr>
-<td width="50%">
-
-#### ☁️ **Azure Resources**
+#### ☁️ Azure Resources
 - [Azure CycleCloud Documentation](https://learn.microsoft.com/en-us/azure/cyclecloud/)
 - [CycleCloud Workspace for Slurm](https://learn.microsoft.com/en-us/azure/cyclecloud/overview-ccws?view=cyclecloud-8)
 - [Azure HPC Architecture Guide](https://learn.microsoft.com/en-us/azure/architecture/topics/high-performance-computing/)
 
-</td>
-<td width="50%">
-
-#### 🛠️ **HPC & Tools**
+#### 🛠️ HPC & Tools
 - [Slurm Workload Manager Documentation](https://slurm.schedmd.com/documentation.html)
 - [Laboratory Scripts Repository](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab)
 - [Azure VM Sizes for HPC](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-hpc)
 
-</td>
-</tr>
-</table>
 
 
-
-
-<div align="center">
 
 ## 🤝 Support and Contributions
 
@@ -831,19 +778,16 @@ The hybrid approach you've implemented enables organizations to:
 [![Discussions](https://img.shields.io/badge/💬_Discussions-GitHub-blue?style=for-the-badge)](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab/discussions)
 [![Contributions](https://img.shields.io/badge/🚀_Contribute-Welcome-green?style=for-the-badge)](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab/pulls)
 
-### 📞 **Get Help**
+### 📞 Get Help
+
 - 🐛 **Found a bug?** [Report it here](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab/issues)
 - 💡 **Have suggestions?** [Start a discussion](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab/discussions)
 - 🔧 **Want to contribute?** [Submit a pull request](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab/pulls)
 - 📚 **Need documentation?** Check our [wiki](https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab/wiki)
 
-</div>
-
 ---
 
-<div align="center">
-
-### 📊 **Repository Stats**
+### 📊 Repository Stats
 
 ![GitHub stars](https://img.shields.io/github/stars/vinil-v/cyclecloud-hybrid-hpc-lab?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/vinil-v/cyclecloud-hybrid-hpc-lab?style=social)
@@ -853,35 +797,8 @@ The hybrid approach you've implemented enables organizations to:
 
 ---
 
-<table>
-<tr>
-<td align="center">
-
-**📅 Last Updated**  
-December 7, 2025
-
-</td>
-<td align="center">
-
-**🔖 Version**  
-2.0.0
-
-</td>
-<td align="center">
-
-**👨‍💻 Maintained By**  
-[vinil-v](https://github.com/vinil-v)
-
-</td>
-<td align="center">
-
-**📄 License**  
-[MIT License](LICENSE)
-
-</td>
-</tr>
-</table>
+| 📅 **Last Updated** | 🔖 **Version** | 👨‍💻 **Maintained By** | 📄 **License** |
+|---------------------|----------------|------------------------|------------------|
+| December 7, 2025 | 2.0.0 | [vinil-v](https://github.com/vinil-v) | [MIT License](LICENSE) |
 
 *Built with ❤️ for the HPC community*
-
-</div>
