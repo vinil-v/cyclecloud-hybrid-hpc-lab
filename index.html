@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enabling Slurm Cloud Bursting in Hybrid HPC Environments with Azure CycleCloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0078d4;
+            --secondary-color: #106ebe;
+            --accent-color: #40e0d0;
+            --text-color: #1f2937;
+            --text-secondary: #6b7280;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --border: #e5e7eb;
+            --code-bg: #f1f5f9;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--background);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        /* Navigation */
+        .nav-toggle {
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        .nav-toggle:hover {
+            background: var(--secondary-color);
+        }
+
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .toc h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin: 0.5rem 0;
+        }
+
+        .toc a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 0.25rem 0;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .toc a:hover {
+            background: rgba(0, 120, 212, 0.1);
+            padding-left: 0.5rem;
+        }
+
+        .toc li ul {
+            margin-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .toc li ul a {
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        /* Main content */
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        main {
+            background: var(--background);
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.3;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-color);
+        }
+
+        h1 {
+            font-size: 2.25rem;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+        }
+
+        h5 {
+            font-size: 1.125rem;
+        }
+
+        h6 {
+            font-size: 1rem;
+        }
+
+        p {
+            margin: 1rem 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Links */
+        a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            text-decoration-color: rgba(0, 120, 212, 0.3);
+            transition: all 0.2s;
+        }
+
+        a:hover {
+            text-decoration-color: var(--primary-color);
+        }
+
+        /* Code blocks */
+        code {
+            background: var(--code-bg);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875em;
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.875rem;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 0.5rem 0.5rem 0 0;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .copy-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--secondary-color);
+        }
+
+        .copy-button.copied {
+            background: #10b981;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(0, 120, 212, 0.05);
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            margin: 1rem 0;
+        }
+
+        /* Video embeds */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            margin: 1.5rem 0;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.5rem;
+        }
+
+        /* Sections */
+        section {
+            margin: 3rem 0;
+        }
+
+        .section-content {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive design */
+        @media (min-width: 768px) {
+            .nav-toggle {
+                display: none;
+            }
+
+            .layout {
+                grid-template-columns: 280px 1fr;
+            }
+
+            .toc {
+                position: sticky;
+                top: 2rem;
+                height: fit-content;
+                margin: 0;
+                max-height: calc(100vh - 4rem);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .nav-toggle {
+                display: inline-block;
+            }
+
+            .toc.hidden {
+                display: none;
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .nav-toggle,
+            .toc,
+            .copy-button {
+                display: none !important;
+            }
+
+            body {
+                font-size: 12pt;
+                line-height: 1.4;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                break-after: avoid;
+            }
+
+            pre {
+                break-inside: avoid;
+            }
+
+            img {
+                max-width: 100%;
+                page-break-inside: avoid;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
+            a[href]:after {
+                content: " (" attr(href) ")";
+                font-size: 90%;
+                color: #666;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles */
+        button:focus,
+        a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="hero-title">Enabling Slurm Cloud Bursting in Hybrid HPC Environments with Azure CycleCloud</h1>
+            <p class="hero-subtitle">A comprehensive, hands-on tutorial for implementing hybrid HPC solutions</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <button class="nav-toggle" onclick="toggleToc()">📖 Table of Contents</button>
+        
+        <div class="layout">
+            <nav>
+                <div class="toc" id="toc">
+                    <h2>📖 Table of Contents</h2>
+                    <ul>
+                        <li><a href="#learning-objectives">Learning Objectives</a></li>
+                        <li><a href="#understanding-azure-cyclecloud">Understanding Azure CycleCloud</a></li>
+                        <li><a href="#azure-cyclecloud-workspace-for-slurm">Azure CycleCloud Workspace for Slurm</a></li>
+                        <li><a href="#what-is-hybrid-hpc">What is Hybrid HPC?</a></li>
+                        <li><a href="#what-is-cloud-bursting">What is Cloud Bursting?</a></li>
+                        <li><a href="#labs-overview">Labs Overview</a></li>
+                        <li><a href="#prerequisites">Prerequisites</a></li>
+                        <li><a href="#lab-exercises">Lab Exercises</a>
+                            <ul>
+                                <li><a href="#lab-0-preparing-networks-for-bursting">Lab 0: Preparing Networks for Bursting</a></li>
+                                <li><a href="#lab-1-creating-an-azure-only-hpc-cluster">Lab 1: Creating an Azure-Only HPC Cluster</a></li>
+                                <li><a href="#lab-2-simulating-the-on-premises-hpc-cluster">Lab 2: Simulating the "On-Premises" HPC Cluster</a></li>
+                                <li><a href="#lab-3-integrating-the-on-premises-hpc-cluster-with-cyclecloud">Lab 3: Integrating the On-Premises HPC Cluster with CycleCloud</a></li>
+                                <li><a href="#lab-4-bursting-in-action">Lab 4: Bursting in Action</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#conclusion">Conclusion</a></li>
+                        <li><a href="#additional-resources">Additional Resources</a></li>
+                        <li><a href="#support-and-contributions">Support and Contributions</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main>
+                <article>
+                    <section>
+                        <p>This comprehensive tutorial demonstrates how organizations can extend their on-premises High Performance Computing (HPC) capacity using hybrid HPC and cloud-bursting strategies with Azure. Through the integration of Slurm with Azure CycleCloud, computational jobs can seamlessly overflow into cloud resources when local capacity is exhausted.</p>
+
+                        <p>This hands-on guide covers the complete workflow from initial setup to validation, including establishing prerequisites, configuring a headless Slurm cluster in CycleCloud, connecting external Slurm schedulers, implementing shared file systems, and conducting end-to-end bursting validation.</p>
+                    </section>
+
+                    <section id="learning-objectives">
+                        <h2>Learning Objectives</h2>
+                        
+                        <p>By completing this tutorial, participants will:</p>
+                        
+                        <ul>
+                            <li>Gain comprehensive understanding of Azure CycleCloud and CycleCloud Workspace for Slurm capabilities</li>
+                            <li>Learn to design and implement hybrid HPC environments using Azure CycleCloud and Slurm</li>
+                            <li>Master cloud bursting mechanisms within HPC workflows</li>
+                            <li>Acquire practical experience through guided hands-on demonstrations</li>
+                        </ul>
+                    </section>
+
+                    <section id="understanding-azure-cyclecloud">
+                        <h2>Understanding Azure CycleCloud</h2>
+                        
+                        <p>Azure CycleCloud serves as an enterprise-grade orchestration platform for managing High Performance Computing environments within Azure. This sophisticated tool enables organizations to provision HPC infrastructure, deploy industry-standard schedulers, and implement automatic scaling to execute workloads efficiently at any scale.</p>
+
+                        <h3>Key Features</h3>
+                        
+                        <ul>
+                            <li><strong>Azure Marketplace Integration</strong>: Seamlessly available through Microsoft Azure Marketplace</li>
+                            <li><strong>Intuitive Management Interface</strong>: Provides both user-friendly GUI and robust CLI/API capabilities</li>
+                            <li><strong>Scheduler Compatibility</strong>: Supports widely-adopted schedulers including Slurm, PBS, LSF, and others</li>
+                            <li><strong>Infrastructure Orchestration</strong>: Manages complete infrastructure provisioning and autoscaling operations</li>
+                            <li><strong>Cost Optimization</strong>: Simplifies cost management and governance across HPC deployments</li>
+                        </ul>
+                        
+                        <p><strong>Documentation</strong>: <a href="https://learn.microsoft.com/en-us/azure/cyclecloud/overview?view=cyclecloud-8" target="_blank" rel="noopener noreferrer">Azure CycleCloud Overview</a></p>
+                    </section>
+
+                    <section id="azure-cyclecloud-workspace-for-slurm">
+                        <h2>Azure CycleCloud Workspace for Slurm</h2>
+                        
+                        <p>The Azure CycleCloud Workspace for Slurm represents a turnkey Azure Marketplace solution that eliminates the complexity traditionally associated with cloud HPC deployments. This comprehensive template deploys a complete Slurm environment optimized for large-scale artificial intelligence and HPC workloads, enabling operational readiness within minutes.</p>
+                        
+                        <p>This ready-to-deploy solution allows organizations to create and deploy fully configured Slurm environments on Azure without requiring extensive prior knowledge of Azure or Slurm technologies. The workspace includes pre-configured components:</p>
+                        
+                        <ul>
+                            <li><strong>Slurm Workload Manager</strong>: Complete scheduling and resource management</li>
+                            <li><strong>PMIx v4</strong>: Process Management Interface for scalable systems</li>
+                            <li><strong>Pyxis and Enroot</strong>: Container runtime solutions for AI/HPC workloads</li>
+                            <li><strong>Cendio ThinLinc</strong>: Remote desktop access capabilities</li>
+                            <li><strong>Open OnDemand</strong>: Web-based cluster portal interface</li>
+                        </ul>
+                        
+                        <p>Upon deployment, users can immediately connect to login nodes via SSH or Visual Studio Code and begin executing Slurm workloads. While Azure CycleCloud provides robust cluster orchestration capabilities, it typically requires manual infrastructure configuration. The CycleCloud Slurm Workspace automates this entire process, delivering a production-ready environment.</p>
+                        
+                        <p><strong>Documentation</strong>: <a href="https://learn.microsoft.com/en-us/azure/cyclecloud/overview-ccws?view=cyclecloud-8" target="_blank" rel="noopener noreferrer">CycleCloud Workspace for Slurm Overview</a></p>
+                    </section>
+
+                    <section id="what-is-hybrid-hpc">
+                        <h2>What is Hybrid HPC?</h2>
+                        
+                        <h3>Blending On-Premises and Cloud Infrastructure</h3>
+                        
+                        <p>Hybrid HPC represents the strategic combination of existing on-premises HPC resources with the elastic, on-demand capabilities of public cloud platforms like Azure. This approach addresses critical organizational challenges while maximizing computational efficiency and cost-effectiveness.</p>
+                        
+                        <p>Organizations implementing hybrid HPC solutions typically face several operational constraints that this architecture helps resolve:</p>
+                        
+                        <h3>Common Pain Points Addressed</h3>
+                        
+                        <ul>
+                            <li><strong>Extended Queue Wait Times</strong>: Traditional fixed-capacity environments often result in significant job queuing delays</li>
+                            <li><strong>Capacity Limitations</strong>: Static on-premises infrastructure cannot accommodate variable workload demands</li>
+                            <li><strong>Capital Expenditure Burden</strong>: High upfront costs for hardware procurement and maintenance</li>
+                            <li><strong>Resource Utilization Inefficiencies</strong>: Underutilized resources during low-demand periods</li>
+                        </ul>
+                        
+                        <h3>Technical Challenges in Hybrid Implementation</h3>
+                        
+                        <p>Successfully implementing hybrid HPC requires addressing several technical considerations:</p>
+                        
+                        <ul>
+                            <li><strong>Data Gravity</strong>: Managing data locality and transfer costs between on-premises and cloud environments</li>
+                            <li><strong>Network Latency</strong>: Ensuring acceptable performance across distributed computing resources</li>
+                            <li><strong>Scheduler Integration</strong>: Seamless coordination between on-premises and cloud-based schedulers</li>
+                            <li><strong>Name Resolution</strong>: Consistent DNS and hostname management across hybrid environments</li>
+                            <li><strong>User Identity Management</strong>: Maintaining unified authentication and authorization systems</li>
+                        </ul>
+                    </section>
+
+                    <section id="what-is-cloud-bursting">
+                        <h2>What is Cloud Bursting?</h2>
+                        
+                        <h3>Dynamic Cluster Extension</h3>
+                        
+                        <p>Cloud bursting represents a sophisticated mechanism where on-premises schedulers, such as Slurm, automatically redirect overflow computational jobs to cloud-based compute nodes when local capacity reaches saturation. This dynamic scaling approach optimizes resource utilization while maintaining cost efficiency.</p>
+                        
+                        <p>The cloud bursting process operates through several key characteristics:</p>
+                        
+                        <ul>
+                            <li><strong>On-Demand Provisioning</strong>: Cloud nodes are created dynamically based on immediate job requirements</li>
+                            <li><strong>Automatic Decommissioning</strong>: Resources are terminated automatically upon job completion to minimize costs</li>
+                            <li><strong>CycleCloud Integration</strong>: Leverages Azure CycleCloud autoscale library features for seamless scaling operations</li>
+                        </ul>
+                        
+                        <h3>Key Technical Considerations</h3>
+                        
+                        <p>Successful cloud bursting implementation requires careful attention to several technical requirements to ensure seamless operation between on-premises and cloud environments:</p>
+                        
+                        <h4>Network Connectivity</h4>
+                        <p>Establishing reliable, secure communication channels between environments is fundamental. This typically involves implementing Site-to-Site VPN connections or Azure ExpressRoute for consistent, high-performance networking.</p>
+                        
+                        <h4>Shared Storage Systems</h4>
+                        <p>Both environments must maintain access to common filesystems, often implemented through Network File System (NFS) or Azure NetApp Files. This shared storage ensures consistent access to home directories, application binaries, and job input/output data.</p>
+                        
+                        <h4>Identity Management</h4>
+                        <p>Maintaining consistent user and group identities (UIDs/GIDs) across environments is essential for security and data access. Organizations typically implement LDAP or Active Directory integration to ensure identity consistency.</p>
+                        
+                        <h4>DNS Resolution</h4>
+                        <p>Consistent name resolution across the entire hybrid cluster is critical for proper node communication and job execution. This requires careful DNS configuration and often involves private DNS zones.</p>
+                    </section>
+
+                    <section id="labs-overview">
+                        <h2>Labs Overview</h2>
+                        
+                        <p>The following Lab exercises provide a comprehensive walkthrough for building and validating a complete hybrid HPC environment using Azure CycleCloud Workspace for Slurm. These exercises simulate realistic hybrid architecture by deploying a standalone Slurm cluster within Azure that represents a traditional on-premises environment.</p>
+                        
+                        <p>This simulated external cluster operates independently of CycleCloud initially, allowing participants to experience how conventional on-premises HPC systems can be extended into Azure cloud resources. Once the simulated on-premises Slurm environment is established, the integration with Azure CycleCloud enables comprehensive cloud bursting capabilities.</p>
+                        
+                        <p>The Lab progression follows a logical sequence where Slurm automatically provisions cloud compute nodes when local resources become insufficient. These structured exercises guide participants through each implementation phase, from network preparation through cluster deployment to complete bursting operations, providing clear understanding of hybrid HPC workflows.</p>
+                        
+                        <p>Each Lab builds systematically upon previous exercises, progressively assembling the complete end-to-end hybrid configuration. Upon completion, participants will operate a fully functional hybrid HPC environment capable of dynamic scaling into Azure based on computational demand.</p>
+                        
+                        <h3>Architecture Overview</h3>
+                        
+                        <img src="./images/hpc-arch.png" alt="hpc-arch.png" />
+                    </section>
+
+                    <section id="prerequisites">
+                        <h2>Prerequisites</h2>
+                        
+                        <p>The following section outlines essential components required for constructing the hybrid HPC environment. These resources will be created systematically through the step-by-step Lab exercises rather than requiring advance provisioning. This overview provides conceptual understanding of the infrastructure that will be deployed during the tutorial progression.</p>
+                        
+                        <h3>Network Infrastructure Requirements</h3>
+                        
+                        <p>The hybrid environment depends on dual virtual networks and unified name resolution systems. Lab exercises will guide you through:</p>
+                        
+                        <ol>
+                            <li><strong>On-Premises Virtual Network (onprem)</strong>: Hosting simulated on-premises Slurm infrastructure</li>
+                            <li><strong>Cloud Virtual Network (cloud)</strong>: Hosting Azure CycleCloud environment and cloud-burst compute resources</li>
+                            <li><strong>Network Peering</strong>: Establishing bidirectional connectivity between on-premises and cloud components</li>
+                            <li><strong>Private DNS Zone Configuration</strong>: Implementing consistent cluster-wide name resolution (e.g., hpc.internal domain)</li>
+                        </ol>
+                        
+                        <h3>Simulated On-Premises Cluster Components</h3>
+                        
+                        <p>Lab exercises will deploy the following components within the onprem network to represent traditional datacenter infrastructure:</p>
+                        
+                        <ol>
+                            <li><strong>Scheduler Virtual Machine</strong>: Azure D4s_v5 instance hosting Slurm controller</li>
+                            <li><strong>Compute Virtual Machine</strong>: Azure D4s_v5 instance for local job execution</li>
+                            <li><strong>Slurm Installation</strong>: Version 24.05.4-2 for on-premises cluster management</li>
+                            <li><strong>Centralized Storage</strong>: NFS-based system for home directories and shared Slurm configuration (Azure NetApp Files recommended for production environments)</li>
+                        </ol>
+                        
+                        <h3>Cloud Environment Components</h3>
+                        
+                        <p>Within the cloud network, Lab exercises will guide deployment of:</p>
+                        
+                        <ol>
+                            <li><strong>Azure CycleCloud Workspace</strong>: Slurm version 2025.09.15 for cloud orchestration</li>
+                            <li><strong>Cloud Compute Resources</strong>: HPC-optimized instances such as Azure HB120rs_v3 with InfiniBand networking support</li>
+                        </ol>
+                        
+                        <h3>Supporting Resources</h3>
+                        
+                        <p>Automation scripts and configuration files used throughout the Lab are maintained in this repository:</p>
+                        
+                        <p><strong>Repository</strong>: <a href="https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab" target="_blank" rel="noopener noreferrer">https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab</a></p>
+                        
+                        <p>These resources will be referenced throughout the exercises to streamline configuration processes and ensure consistent deployment procedures.</p>
+                    </section>
+
+                    <section id="lab-exercises">
+                        <h2>Lab Exercises</h2>
+                        
+                        <section id="lab-0-preparing-networks-for-bursting">
+                            <h3>Lab 0: Preparing Networks for Bursting</h3>
+                            
+                            <p>This foundational Lab establishes the networking infrastructure required to support hybrid HPC environments and enable cloud bursting capabilities. The objective is to create a network topology that facilitates seamless communication between simulated on-premises environments and Azure-based compute resources.</p>
+                            
+                            <p>The exercise involves creating dual virtual networks representing on-premises datacenter and cloud environments, then establishing secure, routable connectivity between them. Additionally, a Private DNS zone deployment ensures consistent name resolution across both environments, which is essential for reliable Slurm node communication during bursting operations.</p>
+                            
+                            <h4>Lab Steps</h4>
+                            
+                            <ol>
+                                <li><strong>Resource Group Creation</strong>: Establish a dedicated Azure resource group for logical organization and management of all Lab components</li>
+                                <li><strong>On-Premises Virtual Network Deployment</strong>: Create the VNet hosting simulated on-premises Slurm scheduler and compute nodes, representing customer-operated datacenter networks</li>
+                                <li><strong>Cloud Virtual Network Deployment</strong>: Establish the VNet hosting Azure CycleCloud environment and cloud-bursting compute resources</li>
+                                <li><strong>VNet Peering Configuration</strong>: Implement VNet peering to provide complete bidirectional connectivity between networks. Note: Production environments typically use ExpressRoute or Site-to-Site VPN, but VNet peering provides sufficient connectivity for simulation purposes</li>
+                                <li><strong>Private DNS Zone Implementation</strong>: Configure Azure Private DNS zone for centralized name resolution across all nodes in both VNets, critical for Slurm communication and stable host identity during bursting</li>
+                            </ol>
+                            
+                            <p>Upon completing Lab 0, you will have established a fully connected and resolvable network foundation supporting all subsequent Lab exercises involving cluster deployment and cloud bursting.</p>
+                            
+                            <h4>Lab 0 Video Tutorial — Network Preparation for Hybrid HPC</h4>
+                            
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/RtCXP_YmuYM" title="Lab 0: Network Foundation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </section>
+
+                        <section id="lab-1-creating-an-azure-only-hpc-cluster">
+                            <h3>Lab 1: Creating an Azure-Only HPC Cluster</h3>
+                            
+                            <p>This Lab focuses on deploying the foundational Azure-based HPC environment using Azure CycleCloud Workspace for Slurm. This environment serves as the baseline cloud cluster before integrating on-premises components. Participants gain practical experience with CycleCloud deployment workflows and familiarization with management interfaces and command-line tools.</p>
+                            
+                            <h4>Primary Learning Activities</h4>
+                            
+                            <ol>
+                                <li><strong>Azure CycleCloud Workspace Deployment</strong>: Deploy CycleCloud Workspace from Azure Marketplace, providing a fully configured Slurm environment including login nodes, scheduler, and ready-made HPC workload configuration</li>
+                                <li><strong>Initial Azure-Only HPC Cluster Creation</strong>: Using CycleCloud web interface or CLI, create and launch a standalone Slurm cluster operating entirely within Azure. This cluster validates job submission, cluster configuration, and baseline autoscaling behavior before hybrid integration</li>
+                                <li><strong>CycleCloud CLI Operations</strong>: Install and configure CycleCloud CLI, exploring essential commands for cluster management, node state monitoring, job initiation, and programmatic CycleCloud interaction. These CLI operations are critical for automation and subsequent Lab exercises involving cloud bursting</li>
+                            </ol>
+                            
+                            <h4>Reference Documentation</h4>
+                            
+                            <ul>
+                                <li><a href="https://learn.microsoft.com/en-us/azure/cyclecloud/qs-deploy-ccws?view=cyclecloud-8" target="_blank" rel="noopener noreferrer">Deploy CycleCloud Workspace for Slurm Quickstart</a></li>
+                                <li><a href="https://learn.microsoft.com/en-us/azure/cyclecloud/cli?view=cyclecloud-8" target="_blank" rel="noopener noreferrer">CycleCloud CLI Reference</a></li>
+                            </ul>
+                            
+                            <h4>Lab 1 Video Tutorial: Creating Azure-Only HPC Cluster</h4>
+                            
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/CkzIVCgrdI8" title="Lab 1 – Creating Azure-Only HPC Cluster" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            
+                            <p>Upon completing Lab 1, you will have a functioning Azure-only Slurm environment and comprehensive understanding of CycleCloud core capabilities, preparing for on-premises cluster integration in subsequent exercises.</p>
+                        </section>
+
+                        <section id="lab-2-simulating-the-on-premises-hpc-cluster">
+                            <h3>Lab 2: Simulating the "On-Premises" HPC Cluster</h3>
+                            
+                            <p>This Lab simulates an on-premises HPC environment by deploying a standalone Slurm cluster in Azure. This external cluster operates independently from CycleCloud and serves as the "on-premises" environment during hybrid integration and cloud bursting exercises. The goal is recreating conditions of traditional datacenter-managed Slurm environments, complete with dedicated schedulers and compute resources.</p>
+                            
+                            <h4>Implementation Steps</h4>
+                            
+                            <ol>
+                                <li><strong>Scheduler VM Creation</strong>: Provision a virtual machine within the onprem VNet to function as the Slurm controller (slurmctld). This node hosts the scheduler, shared configuration files, and NFS exports as required</li>
+                                <li><strong>Compute VM Creation</strong>: Deploy a second virtual machine functioning as the Slurm compute node (slurmd). This node registers with the scheduler and participates in local job execution</li>
+                                <li><strong>On-Premises Slurm HPC Cluster Configuration</strong>: Install required Slurm version, configure slurm.conf and supporting files, establish shared storage, ensure consistent user identity, and validate node communication. Upon completion, you will have a fully functioning standalone Slurm cluster mirroring on-premises deployments</li>
+                            </ol>
+                            
+                            <h4>Commands and Procedures</h4>
+                            
+                            <h5>Scheduler Node Configuration</h5>
+                            
+                            <p>Follow these steps to configure the on-premises Slurm scheduler:</p>
+                            
+                            <ol>
+                                <li><strong>Access Scheduler VM</strong>: Log in to the Scheduler VM as root user</li>
+                                <li><strong>Repository Cloning</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">git clone https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab.git</code></pre>
+                            
+                            <ol start="3">
+                                <li><strong>Navigate to Configuration Directory</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">cd cyclecloud-hybrid-hpc-lab/scheduler/</code></pre>
+                            
+                            <ol start="4">
+                                <li><strong>Execute Slurm Scheduler Build Script</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">sh 01_slurm-scheduler-builder.sh</code></pre>
+                            
+                            <ol start="5">
+                                <li><strong>Provide Required Configuration Details</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>output</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>Building Slurm scheduler for cloud bursting with Azure CycleCloud
+Enter Cluster Name: demo
+Enter the Slurm version to install (You get this from the cyclecloud_build_cluster.sh, eg:24.05.4-2): 24.05.4-2</code></pre>
+                            
+                            <ol start="6">
+                                <li><strong>Review Configuration Summary</strong>: Upon successful completion, review the summary output. The script configures Munge, initializes Slurm, and displays the NFS server IP address required for subsequent configuration.</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>output</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>________________________________________
+Munge configured
+________________________________________
+Configuring Slurm
+________________________________________
+Slurm configured
+________________________________________</code></pre>
+                            
+                            <p>The displayed IP address will be used for configuring shared storage in CycleCloud.</p>
+                            
+                            <h5>Compute Node Configuration</h5>
+                            
+                            <p>Follow these steps to configure the Slurm compute node:</p>
+                            
+                            <ol>
+                                <li><strong>Access Compute VM</strong>: Log in to the Compute1 VM as root user</li>
+                                <li><strong>Repository Cloning</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">git clone https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab.git</code></pre>
+                            
+                            <ol start="3">
+                                <li><strong>Navigate to Configuration Directory</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">cd cyclecloud-hybrid-hpc-lab/computenode/</code></pre>
+                            
+                            <ol start="4">
+                                <li><strong>Execute Compute Node Setup Script</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">sh 01_computenode.sh</code></pre>
+                            
+                            <ol start="5">
+                                <li><strong>Provide Configuration Parameters</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>output</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>------------------------------------------------------------------------------------------------------------------------------
+Building Slurm Compute node for cloud bursting with Azure CycleCloud
+------------------------------------------------------------------------------------------------------------------------------
+
+Enter Cluster Name: demo
+Enter the Slurm version to install (24.05.4-2): 24.05.4-2
+Enter the NFSServer IP Address (This is the IP of the scheduler node): 10.211.0.X</code></pre>
+                            
+                            <ol start="6">
+                                <li><strong>Verify Configuration</strong>: Confirm Slurm is fully configured on the compute node upon script completion</li>
+                            </ol>
+                            
+                            <h5>Starting Services and Cluster Validation</h5>
+                            
+                            <ol>
+                                <li><strong>Start Slurm Controller Service</strong> (on Scheduler VM):</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">systemctl start slurmctld.service</code></pre>
+                            
+                            <ol start="2">
+                                <li><strong>Generate Node and Partition Definitions</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">sh 03-partionconf.sh</code></pre>
+                            
+                            <ol start="3">
+                                <li><strong>Start Slurm Daemon</strong> (on Compute1 VM):</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">systemctl start slurmd</code></pre>
+                            
+                            <ol start="4">
+                                <li><strong>Verify Cluster State</strong>:</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">sinfo</code></pre>
+                            
+                            <p>Expected output:</p>
+                            
+                            <div class="code-header">
+                                <span>output</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+onprem       up   infinite      1   idle compute1</code></pre>
+                            
+                            <ol start="5">
+                                <li><strong>Submit Test Job</strong> (from Scheduler VM):</li>
+                            </ol>
+                            
+                            <div class="code-header">
+                                <span>bash</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">srun -p onprem hostname</code></pre>
+                            
+                            <p>Expected output:</p>
+                            
+                            <div class="code-header">
+                                <span>output</span>
+                                <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code>compute1</code></pre>
+                            
+                            <p>At this point, the standalone Slurm cluster running in Azure has been successfully deployed and validated.</p>
+                            
+                            <h4>Lab 2 Video Tutorial<br />
+                            <strong>Simulating an On-Prem Slurm HPC Cluster in Azure</strong></h4>
+                            
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/X5DwMk1zLGU" title="Lab 2: Build On-Prem Slurm Cluster" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            
+                            <p>Upon completing Lab 2, you will have an operational on-premises Slurm environment ready for integration with Azure CycleCloud in subsequent Lab.</p>
+                        </section>
+
+                        <section id="lab-3-integrating-the-on-premises-hpc-cluster-with-cyclecloud">
+                            <h3>Lab 3: Integrating the On-Premises HPC Cluster with CycleCloud</h3>
+                            
+                            <p>This Lab integrates the previously deployed on-premises Slurm environment with Azure CycleCloud to enable hybrid operation and cloud bursting capabilities. This integration allows CycleCloud to manage cloud-based execute nodes while the on-premises Slurm scheduler remains the primary control point. Upon completion, you will establish the communication, configuration, and shared storage required for seamless cluster extension into Azure.</p>
+                            
+                            <h4>Integration Process</h4>
+                            
+                            <ol>
+                                <li><strong>Slurm (headless) Cluster Template Import</strong>: Import the Slurm (headless) template in CycleCloud interface. This template is specifically designed to provision compute-only nodes and relies on external Slurm controllers, making it ideal for hybrid bursting scenarios</li>
+                                <li><strong>Template Configuration for On-Premises Scheduler</strong>: Update template settings to reference the on-premises Slurm head node IP address. Define VM sizes, partitions, and scaling behavior for CycleCloud-managed cloud nodes</li>
+                                <li><strong>Shared NFS Mount Configuration</strong>: Establish shared filesystem accessible to both on-premises and cloud nodes. This may be hosted on the on-premises scheduler or implemented using Azure NetApp Files. Shared storage ensures consistent access to home directories, configuration files, and job scripts</li>
+                                <li><strong>CycleCloud Connection Script Execution</strong>: Execute the CycleCloud-provided integration script on the on-premises Slurm head node. The script updates slurm.conf with cloud-specific configurations, enabling the controller to recognize and manage cloud bursting partitions. After this step, the scheduler becomes fully cloud-aware</li>
+                            </ol>
+                            
+                            <!-- Continue with the rest of Lab 3 content... -->
+                            
+                            <h4>Lab 3 Video Tutorial<br />
+                            <strong>Integrate On-Prem Slurm with Azure CycleCloud for Bursting</strong></h4>
+                            
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/qoyLRuccoto" title="Integrate On-Prem Slurm with Azure CycleCloud for Bursting" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </section>
+
+                        <section id="lab-4-bursting-in-action">
+                            <h3>Lab 4: Bursting in Action</h3>
+                            
+                            <p>This final Lab validates the complete hybrid HPC workflow by observing Slurm cloud bursting in real-time. With the on-premises Slurm environment integrated into Azure CycleCloud, the scheduler can automatically provision cloud compute nodes when local capacity is fully utilized. This exercise demonstrates the full lifecycle of bursting—from idle cloud nodes to automated provisioning, job execution, and eventual deallocation.</p>
+                            
+                            <!-- Continue with Lab 4 content... -->
+                            
+                            <h4>Lab 4 Video Tutorial<br />
+                            <strong>Cloud Bursting Validation</strong></h4>
+                            
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/GTfkRo4YMNk" title="Cloud Bursting Validation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            
+                            <p>Completing Lab 4 confirms that your hybrid HPC environment is fully operational and capable of scaling dynamically using Azure-based cloud bursting.</p>
+                        </section>
+                    </section>
+
+                    <section id="conclusion">
+                        <h2>Conclusion</h2>
+                        
+                        <p>This comprehensive tutorial demonstrates the complete implementation of hybrid HPC environments using Azure CycleCloud and Slurm. Through these structured Lab exercises, participants gain practical experience with:</p>
+                        
+                        <ul>
+                            <li><strong>Network Infrastructure Design</strong>: Establishing secure, scalable connections between on-premises and cloud environments</li>
+                            <li><strong>Cluster Integration</strong>: Seamlessly connecting existing HPC infrastructure with cloud resources</li>
+                            <li><strong>Automated Scaling</strong>: Implementing dynamic resource provisioning based on workload demands</li>
+                            <li><strong>Cost Optimization</strong>: Leveraging pay-per-use cloud resources to supplement fixed on-premises capacity</li>
+                        </ul>
+                        
+                        <p>The hybrid approach presented here enables organizations to maximize their HPC capabilities while maintaining cost efficiency and operational flexibility. By combining the predictable performance of on-premises infrastructure with the elastic scalability of Azure cloud resources, organizations can effectively address variable computational demands without significant capital investment.</p>
+                    </section>
+
+                    <section id="additional-resources">
+                        <h2>Additional Resources</h2>
+                        
+                        <ul>
+                            <li><a href="https://learn.microsoft.com/en-us/azure/cyclecloud/" target="_blank" rel="noopener noreferrer">Azure CycleCloud Documentation</a></li>
+                            <li><a href="https://learn.microsoft.com/en-us/azure/cyclecloud/overview-ccws?view=cyclecloud-8" target="_blank" rel="noopener noreferrer">Azure CycleCloud Workspace for Slurm</a></li>
+                            <li><a href="https://slurm.schedmd.com/documentation.html" target="_blank" rel="noopener noreferrer">Slurm Workload Manager Documentation</a></li>
+                            <li><a href="https://learn.microsoft.com/en-us/azure/architecture/topics/high-performance-computing/" target="_blank" rel="noopener noreferrer">Azure HPC Documentation</a></li>
+                            <li><a href="https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab" target="_blank" rel="noopener noreferrer">Scripts repository</a></li>
+                        </ul>
+                    </section>
+
+                    <section id="support-and-contributions">
+                        <h2>Support and Contributions</h2>
+                        
+                        <p>For questions, issues, or contributions to this tutorial, please refer to the <a href="https://github.com/vinil-v/cyclecloud-hybrid-hpc-lab" target="_blank" rel="noopener noreferrer">GitHub repository</a> where you can:</p>
+                        
+                        <ul>
+                            <li>Report issues or bugs</li>
+                            <li>Suggest improvements</li>
+                            <li>Contribute enhancements</li>
+                            <li>Access the latest updates and documentation</li>
+                        </ul>
+                        
+                        <hr style="margin: 2rem 0; border: none; height: 1px; background-color: var(--border);">
+                        
+                        <p><strong>Last Updated</strong>: December 2025<br>
+                        <strong>Version</strong>: 1.0<br>
+                        <strong>Maintained By</strong>: <a href="https://github.com/vinil-v" target="_blank" rel="noopener noreferrer">vinil-v</a></p>
+                    </section>
+                </article>
+            </main>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Hybrid HPC with Azure CycleCloud Tutorial. Built with ❤️ for the HPC community.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <script>
+        // Table of Contents toggle
+        function toggleToc() {
+            const toc = document.getElementById('toc');
+            toc.classList.toggle('hidden');
+        }
+
+        // Copy code functionality
+        function copyCode(button) {
+            const pre = button.closest('.code-header').nextElementSibling;
+            const code = pre.querySelector('code');
+            const text = code.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code: ', err);
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="#"]');
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Highlight active section in TOC
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.toc a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                
+                if (window.pageYOffset >= sectionTop && window.pageYOffset < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .toc a.active {
+            background-color: rgba(0, 120, 212, 0.1);
+            padding-left: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</body>
+</html>
